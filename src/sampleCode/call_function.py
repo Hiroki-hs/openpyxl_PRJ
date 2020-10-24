@@ -3,7 +3,7 @@ import openpyxl as xp
 wb = xp.load_workbook("kinou.xlsx")
 wb2 = xp.load_workbook("kinou.xlsx", data_only=True)
 
-
+#関数ごとコピー
 def copy_and_paste(sheetname, num_min_row, num_max_row, num_min_column, num_max_column, sheetname_paste):
     """
     docstring
@@ -20,7 +20,7 @@ def copy_and_paste(sheetname, num_min_row, num_max_row, num_min_column, num_max_
             i += 1
         j += 1
 
-
+#値のみコピー
 def copy_and_paste2(sheetname, num_min_row, num_max_row, num_min_column, num_max_column, sheetname_paste):
     """
     docstring
