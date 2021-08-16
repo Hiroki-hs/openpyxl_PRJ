@@ -1,0 +1,236 @@
+Option Explicit
+
+Sub 項目整理()
+
+
+Dim summary As Worksheet: Set summary = Worksheets("サマリー")
+Dim ws_g As Worksheet: Set ws_g = Worksheets("項目概要")
+Dim ws_k As Worksheet: Set ws_k = Worksheets("項目")
+Dim test1 As Worksheet: Set test1 = Worksheets("機能試験")
+Dim test2 As Worksheet: Set test2 = Worksheets("非機能試験")
+Dim Import As Worksheet: Set Import = Worksheets("インポート")
+
+
+'-------------------------------------------------------------------------------------------------------------------
+Dim 項目番号 As New Collection
+'シート間の紐づけidとして用いる
+'dict毎に実施する試験項目の番号を保持しておく
+
+
+'-------------------------------------------------------------------------------------------------------------------
+Dim dict As Object
+'アプリ～実施者までのひとまとまりを辞書型にする
+'イメージ
+' index
+'   1    アプリ名
+'   2    バージョン
+'   3    試験種別
+'   4    機種名
+'   5    実施レベル
+'   6    実施者
+
+Dim App As String: App = summary.Cells(2, 3)
+Dim Ver As String: Ver = summary.Cells(3, 3)
+
+dict.Add "アプリ名", App
+dict.Add "バージョン", Ver
+
+
+'試験種別→機種→レベル→実施者　の順番で検索
+
+'-------------------------------------------------------------------------------------------------------------------
+'試験種別
+
+Dim test_type As New Collection
+Dim i As Integer
+
+For i = 1 To Sheets.Count
+    If Sheets(i).Name Like "*試験" Then
+        Debug.Print (Sheets(i).Name)
+        test_type.Add (Sheets(i).Name)
+    End If
+Next i
+
+dict.Item("試験種別") = test_type(1)
+
+Dim row As Integer
+For row = 4 To 10
+
+'-------------------------------------------------------------------------------------------------------------------
+'機種：iPhone X
+If ws_g.Cells(row, 10) = "●" Then
+    
+    dict.Item("機種名") = ws_g.Cells(3, 10)
+
+    '---------------------------------------------------------------------------------------------------------------
+    '実施レベル：高 - 低
+    Dim lv As Integer
+
+    For lv = 6 To 8
+                        
+        If ws_g.Cells(row, lv) = "●" Then
+            dict.Item("実施レベル") = ws_g.Cells(3, lv)
+            
+            '-----------------------------------------------------------------------------------------------------------
+            '実施者：Taro - Hanako
+            If ws_g.Cells(row, 12) = "Taro" Then
+                dict.Item("実施者") = "Taro"
+                項目番号.Add (ws_g.Cells(row, 2))
+                
+            End If
+            
+            Exit For
+        End If
+               
+    Next lv
+    
+End If
+
+Next row
+
+ActiveSheet.Cells(3, 1) = dict("アプリ名")
+                ActiveSheet.Cells(4, 1) = dict("バージョン")
+                ActiveSheet.Cells(5, 1) = dict("試験種別")
+                ActiveSheet.Cells(6, 1) = dict("機種名")
+                ActiveSheet.Cells(7, 1) = dict("実施レベル")
+                ActiveSheet.Cells(8, 1) = dict("実施者")
+
+
+'-------------------------------------------------------------------------------------------------------------------
+
+End Sub
+
+Function シート名の下2文字が試験であるものを取得(wb As Workbook) As Collection
+
+Dim i As Integer
+Dim test_sheets As New Collection
+
+For i = 1 To wb.Sheets.Count
+    If wb.Sheets(i).Name Like "*試験" Then
+        Debug.Print (wb.Sheets(i).Name)
+        test_sheets.Add (wb.Sheets(i).Name)
+    End If
+Next i
+
+    シート名の下2文字が試験であるものを取得 = test_sheets
+
+End Function
+
+
+Sub 最新版()
+
+Dim summary As Worksheet: Set summary = Worksheets("サマリー")
+Dim ws As Worksheet: Set ws = Worksheets("項目概要")
+Dim 項目 As Worksheet: Set 項目 = Worksheets("項目")
+Dim tmp As Worksheet: Set tmp = Worksheets("Sheet1")
+
+Dim start As Integer: start = tmp.Cells(1, 2)
+Dim last As Integer: last = tmp.Cells(1, 4)
+
+Dim i As Integer, row As Integer
+
+
+For i = start To last
+
+    tmp.Cells(2, 2) = ws.Cells(3, i)
+    Dim cnt As Integer: cnt = 1
+    
+Dim k_t As String: k_t = tmp.Cells(2, 2) & "高_Taro"
+Dim k_h As String: k_h = tmp.Cells(2, 2) & "高_Hanako"
+Dim k_j As String: k_j = tmp.Cells(2, 2) & "高_Jiro"
+Dim t_t As String: t_t = tmp.Cells(2, 2) & "中_Taro"
+'Dim k_t_05 As String: k_t_05 = tmp.Cells(2, 2) & "中_Hanako"
+'Dim k_t_06 As String: k_t_06 = tmp.Cells(2, 2) & "中_Jiro"
+'Dim k_t_07 As String: k_t_07 = tmp.Cells(2, 2) & "低_Taro"
+'Dim k_t_08 As String: k_t_08 = tmp.Cells(2, 2) & "低_Hanako"
+'Dim k_t_09 As String: k_t_09 = tmp.Cells(2, 2) & "低_Jio"
+'Dim k_t_010 As String: k_t_010 = tmp.Cells(2, 2) & "無_Taro"
+'Dim k_t_011 As String: k_t_011 = tmp.Cells(2, 2) & "無_Hanako"
+'Dim k_t_012 As String: k_t_012 = tmp.Cells(2, 2) & "無_Jiro"
+
+Debug.Print k_t
+    
+'Dim 高_Taro As New Collection
+'Dim 高_Hanako As New Collection
+'Dim 高_Jiro As New Collection
+'Dim 中_Taro As New Collection
+'Dim 中_Hanako As New Collection
+'Dim 中_Jiro As New Collection
+'Dim 低_Taro As New Collection
+'Dim 低_Hanako As New Collection
+'Dim 低_Jiro As New Collection
+'Dim 無_Taro As New Collection
+'Dim 無_Hanako As New Collection
+'Dim 無_Jiro As New Collection
+    
+
+    
+    For row = 4 To 13
+    
+        If ws.Cells(row, i) = "●" Then
+            tmp.Cells(3 + cnt, 2) = ws.Cells(row, 2)
+            tmp.Cells(3 + cnt, 3) = ws.Cells(row, 3)
+            tmp.Cells(3 + cnt, 4) = ws.Cells(row, 4)
+            tmp.Cells(3 + cnt, 5) = ws.Cells(row, 5)
+            tmp.Cells(3 + cnt, 6) = ws.Cells(row, 6)
+            tmp.Cells(3 + cnt, 7) = ws.Cells(row, 7)
+            tmp.Cells(3 + cnt, 8) = ws.Cells(row, 8)
+            tmp.Cells(3 + cnt, 9) = ws.Cells(row, 9)
+            tmp.Cells(3 + cnt, 10) = ws.Cells(row, 12)
+            cnt = cnt + 1
+        End If
+    
+    Next row
+    
+    '--------------------------------------------------------------------
+    'ここまで：Sheet1にある1機種のみの項目が抽出されている状態
+    '次はこれを実施レベル、実施者別(合計12個)のリストに分ける
+    
+    Dim n As Integer
+    For n = 4 To 10
+
+        If tmp.Cells(n, 6) = "●" And tmp.Cells(n, 10) = "Taro" Then
+            k_t.Add (tmp.Cells(n, 2))
+        ElseIf tmp.Cells(n, 6) = "●" And tmp.Cells(n, 10) = "Hanako" Then
+            k_h.Add (tmp.Cells(n, 2))
+        ElseIf tmp.Cells(n, 6) = "●" And tmp.Cells(n, 10) = "Jiro" Then
+            k_j.Add (tmp.Cells(n, 2))
+        ElseIf tmp.Cells(n, 7) = "●" And tmp.Cells(n, 10) = "Taro" Then
+            t_t.Add (tmp.Cells(n, 2))
+       ' ElseIf tmp.Cells(n, 7) = "●" And tmp.Cells(n, 10) = "Hanako" Then
+       '     t_h.Add (tmp.Cells(n, 2))
+       ' ElseIf tmp.Cells(n, 7) = "●" And tmp.Cells(n, 10) = "Jiro" Then
+       '     t_j.Add (tmp.Cells(n, 2))
+       ' ElseIf tmp.Cells(n, 8) = "●" And tmp.Cells(n, 10) = "Taro" Then
+       '     h_t.Add (tmp.Cells(n, 2))
+       ' ElseIf tmp.Cells(n, 8) = "●" And tmp.Cells(n, 10) = "Hanako" Then
+       '     h_h.Add (tmp.Cells(n, 2))
+       ' ElseIf tmp.Cells(n, 8) = "●" And tmp.Cells(n, 10) = "Jiro" Then
+       '     h_j.Add (tmp.Cells(n, 2))
+       ' ElseIf tmp.Cells(n, 9) = "●" And tmp.Cells(n, 10) = "Taro" Then
+       '     n_t.Add (tmp.Cells(n, 2))
+       ' ElseIf tmp.Cells(n, 9) = "●" And tmp.Cells(n, 10) = "Hanako" Then
+       '     n_h.Add (tmp.Cells(n, 2))
+       ' ElseIf tmp.Cells(n, 9) = "●" And tmp.Cells(n, 10) = "Jiro" Then
+       '     n_j.Add (tmp.Cells(n, 2))
+       ' End If
+    
+    Next n
+
+If i = 10 Then
+    Debug.Print "iPhone X"
+ElseIf i = 11 Then
+    Debug.Print "AQUUOS R2"
+End If
+
+Dim v As Variant
+For Each v In k_t_4
+    Debug.Print v
+Next v
+
+
+tmp.Range("B4:J20").Delete
+
+Next i
+
+End Sub
